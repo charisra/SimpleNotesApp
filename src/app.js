@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import noteCard from './notesCard';
+import NoteCard from './notesCard';
 
 class App extends React.Component {
   constructor(){
@@ -44,7 +44,7 @@ class App extends React.Component {
         <section className="notes">
           {this.state.notes.map((note,i) => {
             return (
-              <noteCard note={note} key={'note-${i}'}/>
+              <NoteCard note={note} key={'note-${i}'}/>
             )
           })}
         </section>
