@@ -15,7 +15,8 @@ class App extends React.Component {
   constructor(){
     super();
     this.state = {
-      notes: []
+      notes: [],
+      loggedin: false
     }
     this.showSidebar = this.showSidebar.bind(this);
     this.addNote = this.addNote.bind(this);
@@ -25,18 +26,27 @@ class App extends React.Component {
     this.loginUser = this.loginUser.bind(this);
   }
 componentDidMount() {
-  firebase.database().ref().on('value', (res) => {
-    const userData = res.val();
-    console.log(userData);
-    const dataArray = [];
-    for(let objKey in res.val()) {
-      userData[objKey].key = objKey;
-      dataArray.push(userData[objKey])
+  firebase.auth().onAuthStateChanged((user) => {
+    if(user) {
+      firebase.database().ref().on('value', (res) => {
+        const userData = res.val();
+        console.log(userData);
+        const dataArray = [];
+        for(let objKey in res.val()) {
+          userData[objKey].key = objKey;
+          dataArray.push(userData[objKey])
+        }
+        this.setState({
+          notes: dataArray,
+          loggedin: true
+        })
+      });
+    } else {
+      this.setState({
+        loggedin: false
+      });
     }
-    this.setState({
-      notes: dataArray
-    })
-  });
+  })
 }
 
   showSidebar(e) {
@@ -108,26 +118,51 @@ loginUser(e) {
       alert (err.message);
     });
 }
+logOut() {
+  firebase.auth().signOut();
+}
 
+renderCards() {
+  if(this.state.loggedin) {
+    return this.state.notes.map((note,i) => {
+      return (
+        <NoteCard note={note} key={`note-${i}`} removeNote={this.removeNote}/>
+      )
+    }).reverse()
+  } else {
+    return (<h2>Login to add notes</h2>);
+  }
+}
   render() {
     return (
       <div>
         <header className="mainHeader">
           <h1>Simple Notes App</h1>
           <nav>
-            <a href="" onClick={this.showSidebar}>Add New Note</a>
-            <a href="" onClick={this.showCreate}>Create Account</a>
-            <a href="" onClick={this.showLogin}>Login</a>
-
+            {
+              (() => {
+                if(this.state.loggedin) {
+                  return (
+                    <span>
+                    <a href="" onClick={this.showSidebar}>Add New Note</a>
+                    <a href="" onClick={this.logOut}>Logout</a>
+                    </span>
+                )
+                } else {
+                  return (
+                    <span>
+                    <a href="" onClick={this.showCreate}>Create Account</a>
+                    <a href="" onClick={this.showLogin}>Login</a>
+                    </span>
+                  )
+                }
+              })()
+            }
         </nav>
         </header>
         <div className="overlay" ref={ref => this.overlay = ref}></div>
         <section className="notes">
-          {this.state.notes.map((note,i) => {
-            return (
-              <NoteCard note={note} key={`note-${i}`} removeNote={this.removeNote}/>
-            )
-          }).reverse()}
+          {this.renderCards()}
         </section>
         <aside className="sidebar" ref={ref => this.sidebar = ref}>
           <form onSubmit={this.addNote}>
