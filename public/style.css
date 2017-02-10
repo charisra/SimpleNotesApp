@@ -153,6 +153,7 @@ body {
 .overlay {
 	visibility: hidden;
 	opacity: 0;
+	z-index: 10;
 	transition: all 0.3s ease;
 	position: absolute;
 }
@@ -224,8 +225,3 @@ body {
 	width: 100%;
 	background: rgba(0,0,0,0.4);
 }
-
-
-
-
-
