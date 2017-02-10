@@ -44,9 +44,9 @@ class App extends React.Component {
         <section className="notes">
           {this.state.notes.map((note,i) => {
             return (
-              <NoteCard note={note} key={'note-${i}'}/>
+              <NoteCard note={note} key={`note-${i}`}/>
             )
-          })}
+          }).reverse()}
         </section>
         <aside className="sidebar" ref={ref => this.sidebar = ref}>
           <form onSubmit={this.addNote}>

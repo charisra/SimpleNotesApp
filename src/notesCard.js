@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function(props) {
   return (
-    <div className="noteCard" key={props.key}>
+    <div className="noteCard">
       <i className="fa fa-edit"></i>
       <i className="fa fa-times"></i>
       <h4>{props.note.title}</h4>
