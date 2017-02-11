@@ -12,7 +12,8 @@ export default class NoteCard extends React.Component {
 
   save(e) {
     e.preventDefault();
-    const dbRef = firebase.database().ref(this.props.note.key);
+    const userId = firebase.auth().currentUser.uid;
+    const dbRef = firebase.database().ref(`user/${userId}/notes/${this.props.note.key}`);
     dbRef.update({
       title: this.noteTitle.value,
       text: this.noteText.value

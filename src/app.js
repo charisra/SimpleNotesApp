@@ -28,7 +28,7 @@ class App extends React.Component {
 componentDidMount() {
   firebase.auth().onAuthStateChanged((user) => {
     if(user) {
-      firebase.database().ref().on('value', (res) => {
+      firebase.database().ref(`user/${user.uid}/notes`).on('value', (res) => {
         const userData = res.val();
         console.log(userData);
         const dataArray = [];
@@ -60,7 +60,9 @@ componentDidMount() {
       text: this.noteText.value
     };
 
-    const dbRef = firebase.database().ref();
+    const userId = firebase.auth().currentUser.uid;
+
+    const dbRef = firebase.database().ref(`user/${userId}/notes`);
     dbRef.push(note);
 
     this.noteTitle.value = "";
@@ -69,8 +71,8 @@ componentDidMount() {
   }
 
 removeNote(noteId){
-  console.log(noteId);
-  const dbRef = firebase.database().ref(noteId);
+  const userId = firebase.auth().currentUser.uid;
+  const dbRef = firebase.database().ref(`user/${userId}/notes/${noteId}`);
   dbRef.remove();
 }
 showCreate(e) {
